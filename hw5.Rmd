@@ -75,7 +75,58 @@ sales %>%
 I noticed that each "Category Name" has a prefix which reveals that liquers origin or description, while the rest of the "Category Name" revealed the actual liquer type. So, I split the two into columns, summarized them, and plotted it. As you can see, there are the same liquer types that come from different origins. For example, if you look at Flavored Vodka, some is imported and some is American   
 
 4. Find the daily sales liquor sales in Ames in 2019. Summarize the number of sales, volume of liquor sold, and amount of money spent.
+
+```{r message=FALSE}
+
+sales2019 <- sales %>%
+  filter(year == 2019)
+
+sales2019 <- sales2019 %>%
+  mutate(weekDay = wday(mdy(Date), label = TRUE))
+
+sales2019Summ <- sales2019 %>%
+  group_by(weekDay) %>%
+  summarise(Sales = n(), volume = sum(`Volume Sold (Gallons)`), money = sum(`Sale (Dollars)`))
+
+library(cowplot)
+
+salesPlot <- sales2019Summ %>%
+  ggplot(aes(x=weekDay, y=Sales)) + geom_bar(stat = "identity")
+
+volumePlot <- sales2019Summ %>%
+  ggplot(aes(x=weekDay, y=volume)) + geom_bar(stat = "identity")
+
+moneyPlot <- sales2019Summ %>%
+  ggplot(aes(x=weekDay, y=money)) + geom_bar(stat = "identity")
+
+plot_grid(salesPlot,volumePlot,moneyPlot, labels = "AUTO")
+
+```
+
+### Description:  
+I decided to make the analysis a little more extensive and summarize each day of the week, so I used cowplot to make 3 barplots that give me the values (sales, volume, and money)
+
 5. Plot volume sold by day (use a scatterplot of volume by day and facet by month). Discover trends with the help of `geom_smooth`. Describe any patterns.
+
+```{r message=FALSE}
+
+sales2019 %>%
+  mutate(dayNumber = yday(mdy(Date))) %>%
+  group_by(dayNumber) %>%
+  summarise(volume = sum(`Volume Sold (Gallons)`)) %>%
+  ggplot(aes(x=dayNumber, y=volume)) + geom_point() +
+  ggtitle("Volume sold by day") + geom_smooth()
+
+```
+
+### Description:  
+First, I grouped by the number of day of the year, then I summarized the amount sold that day. I'm guessing all of the dots floating toward the top of the plot represent holidays. I used geom_smooth to get a trendline. So, from my holiday assumption, you could also say that where the line is higher, there are more holidays condensed at that time.
+
 6. Find the dates for ISU football home games in Fall 2019. Can you see a pattern? 
 
+```{r}
+
+
+
+```
 
